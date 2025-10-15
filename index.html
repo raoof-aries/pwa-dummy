@@ -12,7 +12,7 @@
     <title>TaskFlow - PWA Demo</title>
 
     <!-- PWA Manifest -->
-    <link rel="manifest" href="./manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
 
     <!-- iOS Support -->
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
@@ -588,7 +588,7 @@
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
           navigator.serviceWorker
-            .register("./service-worker.js")
+            .register("/service-worker.js")
             .then((registration) => {
               console.log(
                 "Service Worker registered successfully:",
@@ -652,7 +652,7 @@
 
       updateConnectionStatus();
 
-      // Task Manager
+      // Task Manager (uses in-memory storage only)
       class TaskManager {
         constructor() {
           this.tasks = this.loadTasks();
@@ -680,12 +680,16 @@
         }
 
         loadTasks() {
-          const stored = localStorage.getItem("tasks");
-          return stored ? JSON.parse(stored) : [];
+          // Using in-memory storage
+          if (!window.appTasks) {
+            window.appTasks = [];
+          }
+          return window.appTasks;
         }
 
         saveTasks() {
-          localStorage.setItem("tasks", JSON.stringify(this.tasks));
+          // Save to in-memory storage
+          window.appTasks = this.tasks;
         }
 
         addTask() {
