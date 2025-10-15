@@ -1,100 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>PWA Demo — Modern</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#6366f1" />
+    <meta
+      name="description"
+      content="A simple PWA task manager that works offline"
+    />
 
-    <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#0ea5e9" />
+    <title>TaskFlow - PWA Demo</title>
 
-    <link rel="stylesheet" href="/styles.css" />
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- iOS Support -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="page">
-      <header class="topbar">
-        <div class="brand">
-          <img src="/icons/icon-192.png" alt="PWA" class="logo" />
-          <div>
-            <div class="brand-name">PWA Demo</div>
-            <div class="brand-sub">Minimal • Fast • Installable</div>
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <h1>
+            <svg
+              class="logo-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M9 11l3 3L22 4"></path>
+              <path
+                d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"
+              ></path>
+            </svg>
+            TaskFlow
+          </h1>
+          <div class="connection-status" id="connectionStatus">
+            <span class="status-dot"></span>
+            <span class="status-text">Online</span>
           </div>
         </div>
-        <nav>
-          <button id="notifyBtn" class="btn btn-primary">Install</button>
-        </nav>
+        <button class="install-btn" id="installBtn" style="display: none">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Install App
+        </button>
       </header>
 
-      <main class="container">
-        <section class="hero card">
-          <div class="hero-left">
-            <h1 class="title">Progressive Web App — Demo</h1>
-            <p class="lead">
-              A tiny, performant PWA you can install, run offline, and deploy
-              anywhere. Works on desktop & mobile.
-            </p>
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Input Section -->
+        <div class="input-section">
+          <form id="taskForm">
+            <div class="input-group">
+              <input
+                type="text"
+                id="taskInput"
+                placeholder="Add a new task..."
+                required
+                autocomplete="off"
+              />
+              <button type="submit" class="add-btn">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Task
+              </button>
+            </div>
+          </form>
+        </div>
 
-            <ul class="features">
-              <li>Installable & standalone</li>
-              <li>Offline-ready with service worker</li>
-              <li>Simple, fast, and responsive</li>
-            </ul>
+        <!-- Stats Section -->
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-number" id="totalTasks">0</div>
+            <div class="stat-label">Total Tasks</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="completedTasks">0</div>
+            <div class="stat-label">Completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="pendingTasks">0</div>
+            <div class="stat-label">Pending</div>
+          </div>
+        </div>
 
-            <div class="actions">
-              <a href="/offline.html" class="btn btn-ghost"
-                >Open Offline Page</a
+        <!-- Tasks List -->
+        <div class="tasks-section">
+          <div class="section-header">
+            <h2>Your Tasks</h2>
+            <button class="clear-btn" id="clearCompleted">
+              Clear Completed
+            </button>
+          </div>
+          <div id="tasksList" class="tasks-list">
+            <div class="empty-state">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
               >
-              <a href="#" id="learnMore" class="link">How it works →</a>
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <p>No tasks yet. Add one to get started!</p>
             </div>
           </div>
-
-          <div class="hero-right">
-            <div class="phone-mock">
-              <div class="screen">
-                <img
-                  src="/icons/icon-192.png"
-                  alt="app icon"
-                  class="app-icon"
-                />
-                <div class="screen-text">PWA Demo</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="info-grid">
-          <article class="info card">
-            <h3>Fast</h3>
-            <p>
-              App shell is cached on first load so subsequent visits are
-              instant.
-            </p>
-          </article>
-          <article class="info card">
-            <h3>Secure</h3>
-            <p>
-              Serve over HTTPS (Vercel / Netlify / any modern host) for install
-              & service worker features.
-            </p>
-          </article>
-          <article class="info card">
-            <h3>Test</h3>
-            <p>
-              Open DevTools → Application to inspect manifest & service worker;
-              use Lighthouse for audit.
-            </p>
-          </article>
-        </section>
-
-        <footer class="footer">
-          <small
-            >Made with ♥ for a clean PWA demo — drop this folder into your
-            server and go live.</small
-          >
-        </footer>
+        </div>
       </main>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>PWA Demo - Works Offline! 🚀</p>
+      </footer>
     </div>
 
-    <script src="/app.js"></script>
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
   </body>
 </html>
