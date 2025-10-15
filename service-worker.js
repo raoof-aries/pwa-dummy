@@ -1,26 +1,41 @@
 const CACHE_NAME = "taskflow-v1";
 const urlsToCache = [
-  "/",
-  "/index.html",
-  "/styles.css",
-  "/app.js",
-  "/manifest.json",
-  "/icons/icon-192x192.png",
-  "/icons/icon-512x512.png",
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./icons/icon-72x72.png",
+  "./icons/icon-96x96.png",
+  "./icons/icon-128x128.png",
+  "./icons/icon-144x144.png",
+  "./icons/icon-152x152.png",
+  "./icons/icon-192x192.png",
+  "./icons/icon-384x384.png",
+  "./icons/icon-512x512.png",
 ];
 
 // Install Service Worker
 self.addEventListener("install", (event) => {
-  console.log("Service Worker installing...");
+  console.log("[ServiceWorker] Installing...");
   event.waitUntil(
     caches
       .open(CACHE_NAME)
       .then((cache) => {
-        console.log("Opened cache");
-        return cache.addAll(urlsToCache);
+        console.log("[ServiceWorker] Caching app shell");
+        // Use addAll with error handling
+        return cache.addAll(urlsToCache).catch((error) => {
+          console.error("[ServiceWorker] Cache addAll failed:", error);
+          // Try to add files individually to identify which ones fail
+          return Promise.all(
+            urlsToCache.map((url) => {
+              return cache.add(url).catch((err) => {
+                console.error(`[ServiceWorker] Failed to cache ${url}:`, err);
+              });
+            })
+          );
+        });
       })
       .catch((error) => {
-        console.log("Cache failed:", error);
+        console.error("[ServiceWorker] Cache open failed:", error);
       })
   );
   self.skipWaiting();
@@ -28,38 +43,35 @@ self.addEventListener("install", (event) => {
 
 // Activate Service Worker
 self.addEventListener("activate", (event) => {
-  console.log("Service Worker activating...");
+  console.log("[ServiceWorker] Activating...");
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log("Deleting old cache:", cacheName);
+            console.log("[ServiceWorker] Removing old cache:", cacheName);
             return caches.delete(cacheName);
           }
         })
       );
     })
   );
-  self.clients.claim();
+  return self.clients.claim();
 });
 
-// Fetch Strategy: Cache First, falling back to Network
+// Fetch Strategy: Cache First with Network Fallback
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches
-      .match(event.request)
-      .then((response) => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        console.log("[ServiceWorker] Serving from cache:", event.request.url);
+        return cachedResponse;
+      }
 
-        // Clone the request
-        const fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest).then((response) => {
-          // Check if valid response
+      console.log("[ServiceWorker] Fetching from network:", event.request.url);
+      return fetch(event.request)
+        .then((response) => {
+          // Don't cache non-successful responses
           if (
             !response ||
             response.status !== 200 ||
@@ -71,46 +83,54 @@ self.addEventListener("fetch", (event) => {
           // Clone the response
           const responseToCache = response.clone();
 
+          // Cache the new response
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
           });
 
           return response;
+        })
+        .catch((error) => {
+          console.error("[ServiceWorker] Fetch failed:", error);
+          // Return cached index.html as fallback
+          return caches.match("./index.html");
         });
-      })
-      .catch(() => {
-        // Return a custom offline page if you have one
-        return caches.match("/index.html");
-      })
+    })
   );
 });
 
 // Background Sync (optional)
 self.addEventListener("sync", (event) => {
   if (event.tag === "sync-tasks") {
-    console.log("Background sync triggered");
+    console.log("[ServiceWorker] Background sync triggered");
     event.waitUntil(syncTasks());
   }
 });
 
 async function syncTasks() {
-  // Implement your sync logic here
-  console.log("Syncing tasks...");
+  console.log("[ServiceWorker] Syncing tasks...");
+  // Implement your sync logic here if needed
 }
 
 // Push Notifications (optional)
 self.addEventListener("push", (event) => {
+  const title = "TaskFlow";
   const options = {
-    body: event.data ? event.data.text() : "New notification",
-    icon: "/icons/icon-192x192.png",
-    badge: "/icons/icon-192x192.png",
+    body: event.data ? event.data.text() : "You have a new notification",
+    icon: "./icons/icon-192x192.png",
+    badge: "./icons/icon-192x192.png",
     vibrate: [200, 100, 200],
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: 1,
+    },
   };
 
-  event.waitUntil(self.registration.showNotification("TaskFlow", options));
+  event.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.addEventListener("notificationclick", (event) => {
+  console.log("[ServiceWorker] Notification click received");
   event.notification.close();
-  event.waitUntil(clients.openWindow("/"));
+  event.waitUntil(clients.openWindow("./"));
 });
