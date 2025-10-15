@@ -3,24 +3,98 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>PWA Demo</title>
+    <title>PWA Demo — Modern</title>
+
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#1e88e5" />
-    <link rel="stylesheet" href="styles.css" />
+    <meta name="theme-color" content="#0ea5e9" />
+
+    <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <header>
-      <h1>PWA Demo</h1>
-      <p>This is a minimal Progressive Web App demo.</p>
-      <button id="notifyBtn">Show Install Prompt (if available)</button>
-    </header>
-    <main>
-      <p>
-        Try installing this site as a PWA and then turn off your network to test
-        offline behavior.
-      </p>
-      <p><a href="/offline.html">Open the offline page (cached)</a></p>
-    </main>
-    <script src="app.js"></script>
+    <div class="page">
+      <header class="topbar">
+        <div class="brand">
+          <img src="/icons/icon-192.png" alt="PWA" class="logo" />
+          <div>
+            <div class="brand-name">PWA Demo</div>
+            <div class="brand-sub">Minimal • Fast • Installable</div>
+          </div>
+        </div>
+        <nav>
+          <button id="notifyBtn" class="btn btn-primary">Install</button>
+        </nav>
+      </header>
+
+      <main class="container">
+        <section class="hero card">
+          <div class="hero-left">
+            <h1 class="title">Progressive Web App — Demo</h1>
+            <p class="lead">
+              A tiny, performant PWA you can install, run offline, and deploy
+              anywhere. Works on desktop & mobile.
+            </p>
+
+            <ul class="features">
+              <li>Installable & standalone</li>
+              <li>Offline-ready with service worker</li>
+              <li>Simple, fast, and responsive</li>
+            </ul>
+
+            <div class="actions">
+              <a href="/offline.html" class="btn btn-ghost"
+                >Open Offline Page</a
+              >
+              <a href="#" id="learnMore" class="link">How it works →</a>
+            </div>
+          </div>
+
+          <div class="hero-right">
+            <div class="phone-mock">
+              <div class="screen">
+                <img
+                  src="/icons/icon-192.png"
+                  alt="app icon"
+                  class="app-icon"
+                />
+                <div class="screen-text">PWA Demo</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="info-grid">
+          <article class="info card">
+            <h3>Fast</h3>
+            <p>
+              App shell is cached on first load so subsequent visits are
+              instant.
+            </p>
+          </article>
+          <article class="info card">
+            <h3>Secure</h3>
+            <p>
+              Serve over HTTPS (Vercel / Netlify / any modern host) for install
+              & service worker features.
+            </p>
+          </article>
+          <article class="info card">
+            <h3>Test</h3>
+            <p>
+              Open DevTools → Application to inspect manifest & service worker;
+              use Lighthouse for audit.
+            </p>
+          </article>
+        </section>
+
+        <footer class="footer">
+          <small
+            >Made with ♥ for a clean PWA demo — drop this folder into your
+            server and go live.</small
+          >
+        </footer>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
   </body>
 </html>
